@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>拓展插件</title>
+    <!--<link rel="stylesheet" href="datepicker.css">-->
+    <style>
+        table.my-date-table {
+            border: none;
+            text-align: center;
+            width: 100%;
+            display: none;
+        }
+
+        table.my-date-table td, table.my-date-table th {
+            background-color: white;
+            cursor: pointer;
+            width: 14%;
+            border-radius: 5px;
+        }
+
+        table.my-date-table td:hover, table.my-date-table th:hover {
+            background-color: whitesmoke;
+        }
+
+        table.my-date-table td.darkGrey, table.my-date-table th.darkGrey {
+            color: darkgrey;
+        }
+
+        table.my-date-table td.active, table.my-date-table th.active {
+            background-color: #dbf0fa !important;
+        }
+
+        .my-date-wrap {
+            display: none;
+            padding: 3px;
+            border: 1px solid lightgrey;
+            width: 300px;
+            box-shadow: 5px 5px rgba(102, 102, 102, 0.1);
+            position: absolute;
+            z-index: +999;
+            background-color: white;
+        }
+
+        .my-date-wrap table.my-date-table .day-off {
+            color: indianred;
+            background-color: floralwhite;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div data-x="true"></div>
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+<input type="text" class="form-control input-inline input-min date-picker my-date" placeholder="">
+
+
+<script src="jquery-2.1.4.js"></script>
+<script src="jQuery.datepicker.js"></script>
+<script src="jQuery.myDate.js"></script>
+<script>
+    var myDateInput = $(".my-date").myDate({hyphen: "+", format: "yyy-mm-dd"});
+    //    console.log(myDateInput);
+    var time = new Date();
+    console.log(time);
+
+    var days = 0;
+    for (var i = 0; i < time.getFullYear(); i++) {
+        days += 365;
+        if (_isLeapYear(i)) {
+            days++;
+        }
+    }
+    var _diff = (new Date().getTime() - new Date(2018, 0, 0, 23, 54, 18).getTime() );
+    days = days * 86400 * 1000 + _diff - time.getTime();
+    console.log(days);
+    function _isLeapYear(year) {
+        return !(year % 100) ? !(year % 400) : !(year % 4);
+    }
+    console.log(new Date(-days));
+    console.log(new Date(-days).getFullYear());
+    console.log(new Date(-days).getMonth() + 1);
+    console.log(new Date(-days).getDate());
+    console.log(new Date(-days).getHours());
+    console.log(new Date(-days).getMinutes());
+    console.log(new Date(-days).getSeconds());
+</script>
+
+<script>
+    (function () {
+        return;
+        var input = $("input");
+        if (jQuery().datepicker) {
+            var dateObj = {
+                orientation: "left",
+                format: 'yyyy-mm-dd',
+            };
+            var datePicker = $(".date-picker");
+            datePicker.datepicker(dateObj).on("changeDate", function (selected) {
+                console.log(selected);
+            });
+//        datePicker.datepicker("show");
+            setTimeout(function () {
+                datePicker.eq(1).datepicker('destory', function () {
+                    console.log("河文档")
+                })
+            }, 1111)
+        }
+    })()
+</script>
+
+<script>
+    var isLeapYear = function (year) {
+        return (!(year % 100)) ? (!(year % 400)) : (!(year % 4));
+    };
+</script>
+</body>
+</html>

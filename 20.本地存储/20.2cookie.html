@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>cookie</title>
+</head>
+<body>
+<script>
+    document.cookie = "james=" + encodeURIComponent(document.lastModified + '');
+    
+    function setCookie(obj) {
+        var cookie = obj.name + "=" + encodeURIComponent(obj.value);
+        if (typeof obj.daysToLive === "number") {
+            cookie += ";max-age=" + (obj.daysToLive * 60 * 60 * 24);
+        }
+        if (typeof obj.path === "string") {
+            cookie += ";path=" + obj.path;
+        }
+        document.cookie = cookie;
+    }
+    setCookie({daysToLive: 1, name: 'james', value: "慕斯慕斯"});
+    setCookie({daysToLive: 1, name: 'McGrady', value: JSON.stringify({a: 1})});
+    setCookie({daysToLive: 1, name: 'pierce', value: JSON.stringify({a: 34})});
+    console.log((document.cookie + ''));
+    console.log(decodeURIComponent(document.cookie + ''));
+
+    function getCookie(key) {
+        if (document.cookie) {
+            var cookie = document.cookie.split("; ");
+            var obj = {};
+            for (var i = 0; i < cookie.length; i++) {
+                var item = decodeURIComponent(cookie[i]).split("=");
+                var val;
+                try {
+                    val = JSON.parse(item[1]);
+                }
+                catch (e) {
+                    val = item[1];
+                }
+                if (item[0] === key) {
+                    return val;
+                }
+                obj[item[0]] = val;
+            }
+        }
+        return key === undefined ? obj : null;
+    }
+    var a = getCookie();
+    console.log(a)
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>跨域请求</title>
+</head>
+<body>
+<a href="18.1XMLHttpRequest.html">XMLHttpRequest</a>
+<a href="https://www.baidu.com">百度一下</a>
+<script>
+    var request = new XMLHttpRequest();
+    var supportsCors = request.withCredentials !== undefined;
+    var lists = document.getElementsByTagName("a");
+    for (var i = 0; i < lists.length; i++) {
+        var link = lists[i];
+        if (link.host !== location.host || link.protocol !== location.protocol) {
+            link.title = "站外链接";
+            if (!supportsCors) {
+                continue;
+            }
+        }
+        if (link.addEventListener) {
+            link.addEventListener("mouseover", mouseOverHandler);
+        } else {
+            link.attachEvent("mouseover", mouseOverHandler);
+        }
+    }
+    function mouseOverHandler(e) {
+        var target = e.target || e.srcElement;
+        var url = target.href;
+        var req = new XMLHttpRequest();
+        req.open("HEAD", url);
+        req.onreadystatechange = function (e) {
+            if (req.readyState !== 4) {
+                return
+            }
+            if (req.status === 200) {
+                console.log(target)
+                var type = req.getResponseHeader("Content-Type");
+                var size = req.getResponseHeader("Content-Length");
+                var date = req.getResponseHeader("Last-Modified");
+                target.title = "类型：" + type + "大小：" + size + "时间：" + date;
+            }
+        };
+        req.send(null);
+        if (link.removeEventListener) {
+            link.removeEventListener("mouseover", mouseOverHandler);
+        } else {
+            link.detachEvent("mouseover", mouseOverHandler);
+        }
+    }
+</script>
+<p>
+    跨域请求jsonp的p：padding，包裹，<br>
+    将需要获得的数据用一个js函数名和圆括号包裹起来
+</p>
+<p>
+    jsonp应该返回一个这样的数据 callback([1,2,{'a':'xxx'}])，而不是一个json字符串
+</p>
+<!--使用script元素发送jsonp请求-->
+<script>
+    getJSONP = {};
+    getJSONP.getFn = function (url, callback) {
+        var cbnum = "cb" + getJSONP.counter++;
+        var cbname = "getJSONP." + cbnum;
+        console.log(cbname)
+        if (url.indexOf("?") === -1) {
+            url += "?jsonp=" + cbname;
+            url += "?callback=" + cbname;
+        } else {
+            url += "&jsonp=" + cbname;
+            url += "&callback=" + cbname;
+        }
+        console.log(url)
+
+        getJSONPcb0 = function (response) {
+//            callback(response);
+            console.log("这里")
+        }
+        getJSONP[cbnum] = function (response) {
+            debugger;
+            try {
+                callback(response);
+            } finally {
+                delete getJSONP[cbnum];
+                script.parentNode.removeChild(script);
+            }
+        }
+        var script = document.createElement("script");
+
+        script.src = url;
+        document.body.appendChild(script);
+    }
+    getJSONP.counter = 0;
+    getJSONP.getFn("http://matchweb.sports.qq.com/team/list?columnId=100000&competitionId=100000&callback=&_=1528196994719", console.table);
+
+
+</script>
+</body>
+</html>

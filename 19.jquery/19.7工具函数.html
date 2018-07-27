@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>工具函数</title>
+</head>
+<body>
+
+<div id="wrap">
+    <div id="content">
+        <ul>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+            <li>7</li>
+            <li>8</li>
+            <li>9</li>
+            <li>10</li>
+            <li>11</li>
+        </ul>
+    </div>
+</div>
+
+<!--<script src="jquery1.4.1.js"></script>-->
+<script src="jquery-2.1.4.js"></script>
+
+<script>
+    //  第一个元素包含第二个元素
+    //    console.log($.contains(wrap, content));
+    //  each
+    var div = $("div");
+    $.each(div, function (i, t) {
+//        console.log(i, t);
+        return false
+    });
+    div.each(function (i, t) {
+//        console.log(i, t);
+        return false;
+    });
+    //  extend
+    var a = {a: []};
+    var c = $.extend({}, a);
+    var d = $.extend(true, {}, a);
+    console.log(c, d);
+    var b = Object.create(a);
+    var e = $.extend({}, b);
+    console.log(e);
+    //  grep
+    var arr = [1, 2, 3];
+    var brr = $.grep(arr, function (t, i) {
+        console.log(t, i);
+        return t > 2;
+    }, true);
+    console.log(brr);
+    var inArrayIndex = $.inArray(3, brr);
+    console.log(inArrayIndex);
+    //  isFunction
+    console.log($.isFunction($.isFunction));
+    //  是js纯对象
+    function A() {
+
+    }
+    A.prototype = {};
+    A.prototype.constructor = A;
+    console.log($.isPlainObject(new A));        //  false
+    console.log($.isPlainObject(A.prototype));  //  false
+    console.log($.isPlainObject({}));           //  true
+    //  makeArray
+    var divs = document.getElementsByTagName("*");
+    console.log($.makeArray(divs));
+    console.log($.makeArray({a: 1}));
+    //  map
+    console.log($.map(arr, function (t, i) {
+        console.log(t, i);
+        return t * 11;
+    }));
+    //  浏览器功能测试
+    console.log($.support);
+    var li = $("li:nth-child(4n)").css("color", "red");
+
+    //  选择器
+    var end1 = $("#wrap").find("#content").css("background-color", "lightyellow").find("li").filter(function (i, t) {
+        if (i % 3 === 1) {
+            $(t).css({color: "blue"});
+        }
+    }).end().end().end();
+    console.log(end1)
+</script>
+</body>
+</html>

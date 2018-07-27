@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>核心api</title>
+    <style>
+        p {
+            float: left;
+            width: 33%;
+        }
+
+        fieldset::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+<fieldset>
+    <legend>数组</legend>
+    <p>indexof</p>
+    <p>lastindexof</p>
+    <p>slice</p>
+    <p>splice</p>
+    <p>concat</p>
+    <p>push</p>
+    <p>pop</p>
+    <p>shift</p>
+    <p>unshift</p>
+    <p>map</p>
+    <p>foreach</p>
+    <p>filter</p>
+    <p>some</p>
+    <p>every</p>
+    <p>reduce</p>
+    <p>rightreduce</p>
+    <p>join</p>
+    <p>tostring</p>
+    <p>tolocalestring</p>
+    <p>reverse</p>
+    <p>sort</p>
+</fieldset>
+<script>
+    function a() {
+        console.log(this.name)
+    }
+    var b = {name: 12};
+    var c = a.bind(b);
+    c()
+</script>
+</body>
+</html>

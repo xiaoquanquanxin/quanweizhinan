@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+slice
+splice
+concat
+push
+pop
+shift
+unshift
+reduce
+rightreduce
+some
+every
+foreach
+map
+filter
+join
+reverse
+indexof
+lastindexof
+sort
+tolocalestring
+tostring
+<script>
+    postMessage('12345', window.location.href);
+
+    function handle(e) {
+        console.log(e);
+        console.log(arguments.callee.name === 'handle');
+        console.log(arguments.caller)
+    }
+    window.addEventListener('message', handle, false);
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jquery</title>
+    <style>
+        p{
+            text-align: justify;
+        }
+        div {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            display: none;
+            -webkit-transition: background-color 0.3s;
+            -moz-transition: background-color 0.3s;
+            -ms-transition: background-color 0.3s;
+            -o-transition: background-color 0.3s;
+            transition: background-color 0.3s;
+        }
+
+        .active {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+<p>jquery方法本身是工厂模式,但他返回的对象却是通过jQuery.prototype.init这个构造函数new出来的,jQuery.prototype.init的原型也指向jQuery.prototype</p>
+<p>jQuery返回的对象是jQuery.prototype.init的实例,所以他继承了init的prototype的方法,比如each</p>
+<p>jQuery不仅包含处理这些实例的方法,还有一些通用的函数,通过jQuery.extend复制到jQuery上,比如$.each</p>
+<div></div>
+<!--<script src="19.1.js"></script>-->
+<script src="jquery1.4.1.js"></script>
+<script>
+    var p =$("p").eq(1);
+    var div = $("div").show(1123, function () {
+        console.log(1)
+    });
+    console.log(div);
+    (function () {
+        function Person(selector) {
+            return new Person.fn.init(selector);
+        }
+
+        Person.fn = Person.prototype = {
+            constructor: Person,
+            length: 0,
+            init: function (selector) {
+                selector = document.getElementsByTagName(selector);
+                if (selector.selector !== undefined) {
+                    this.selector = selector.selector;
+                    this.context = selector.context;
+                }
+                return Person.makeArray(selector, this);
+            },
+        };
+        Person.extend = Person.fn.extend = function () {
+            var target = arguments[0];
+            if (arguments.length === 1) {
+                //  给Person继承
+                if (typeof target === "object") {
+                    for (var key in target) {
+                        Person[key] = target[key];
+                    }
+                }
+            }
+            return target
+        };
+        //  为什么要调用Person.extend？因为我需要被继承的这些方法的执行条件并不一定需要实例化,比如$.each
+        Person.extend({
+            makeArray: function (array, results) {
+                var ret = results || [];
+                Person.merge(ret, array);
+                return ret;
+            },
+            merge: function (first, second) {
+                var i = first.length, j = 0;
+                if (typeof second.length === "number") {
+                    for (var l = second.length; j < l; j++) {
+                        first[i++] = second[j];
+                    }
+                } else {
+                    while (second[j] !== undefined) {
+                        first[i++] = second[j++];
+                    }
+                }
+                first.length = i;
+                return first;
+            },
+            each: function (object, callback, args) {
+                var name;
+                var i = 0;
+                var length = object.length;
+                var isObj = length === undefined || jQuery.isFunction(object);
+                if (args) {
+                    if (isObj) {
+                        for (name in object) {
+                            if (callback.apply(object[name], args) === false) {
+                                break;
+                            }
+                        }
+                    } else {
+                        for (; i < length;) {
+                            if (callback.apply(object[i++], args) === false) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    if (isObj) {
+                        for (name in object) {
+                            if (callback.call(object[name], name, object[name]) === false) {
+                                break;
+                            }
+                        }
+                    } else {
+                        for (var value = object[0]; i < length && callback.call(value, i, value) !== false; value = object[++i]) {
+                        }
+                    }
+                }
+
+                return object;
+            },
+        });
+        Person.fn.init.prototype = Person.fn;
+        window.Person = Person;
+    })();
+    var person = Person("div");
+    console.log(person);
+    var arr = [1, 23, 4];
+    Person.each(arr, function (i, value) {
+        console.log(i, value)
+    });
+    //    console.log(Object.getPrototypeOf(Person("div")));
+    $(document).ready(function () {
+
+    });
+    div.data("a",123);
+</script>
+</body>
+</html>

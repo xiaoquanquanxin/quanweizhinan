@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IE的userData</title>
+    <script>
+        window.onload = function () {
+            function UserDataStorage(maxage) {
+                var memory = document.createElement("div");
+                memory.id = "_memory";
+                memory.style.display = 'none';
+                memory.style.behavior = "url('#userData')";
+                document.body.appendChild(memory);
+                if (maxage) {
+                    var now = new Date().getTime();
+                    var expires = now + maxage * 1000;
+                    memory.expires = new Date(expires).getTime();
+                }
+                memory.load("UserDataStorage");
+            }
+            UserDataStorage(1)
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>

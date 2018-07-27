@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jquery的两种继承</title>
+</head>
+<body>
+<div id="div1">2345</div>
+<div id="div2">2345</div>
+<script>
+    (function (w) {
+        var jquery = function (selector) {
+            return new jquery.init(selector);
+        };
+
+        jquery.init = function (selector) {
+            if (typeof selector === 'string') {
+                this[0] = document.querySelector(selector);
+            }
+        };
+        jquery.init.prototype = {};
+        jquery.init.prototype.constructor = jquery.init;
+        jquery.extend =  jquery.init.prototype.extend = function (obj) {
+            for (var key in obj) {
+                this[key] = obj[key];
+            }
+        };
+        w.$ = w.jquery = jquery;
+    })(window);
+</script>
+<script>
+    (function (w) {
+        return
+        var jquery = function (selector) {
+            return new jquery.fn.init(selector);
+        };
+        jquery.fn = jquery.prototype = {};
+        jquery.fn.init = function (selector) {
+            if (typeof selector === 'string') {
+                this[0] = document.querySelector(selector);
+            }
+        };
+        jquery.fn.init.prototype = jquery.fn;
+        jquery.fn.constructor = jquery.fn.init;
+        jquery.extend = jquery.prototype.extend = function (obj) {
+            for (var key in obj) {
+                this[key] = obj[key];
+            }
+        };
+        w.$ = w.jquery = jquery;
+    })(window);
+</script>
+<script>
+    (function () {
+        $.extend({
+            func: function (e) {
+                console.log(e)
+            }
+        });
+        $.init.prototype.extend({
+            fnFunc: function (e) {
+                console.log(e)
+            }
+        });
+        var div1 = $("#div1");
+        var div2 = $("#div2");
+        $.func(1234);
+        div1.fnFunc(12345);
+    })();
+</script>
+</body>
+</html>

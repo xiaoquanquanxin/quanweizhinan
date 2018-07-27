@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ajax</title>
+</head>
+<body>
+<table id="loadWrap" contenteditable="true"></table>
+<script src="jquery1.4.1.js"></script>
+<script>
+    $("#loadWrap").load("19.4事件.html dl");
+    $.ajax({
+        url: "a.json",
+        type: "get",
+//        success: function (e) {
+//            console.log(e)
+//        },
+//        beforeSend: function (e) {
+//            console.log(e)
+//        },
+    complete: function (e) {
+            console.log(e);
+        }
+    });
+
+    $("#loadWrap").bind({
+        ajaxComplete: function (e) {
+            console.log(e);
+        }
+    })
+    
+
+</script>
+</body>
+</html>

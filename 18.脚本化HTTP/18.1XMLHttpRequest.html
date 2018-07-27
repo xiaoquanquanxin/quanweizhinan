@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XMLHttpRequest</title>
+</head>
+<body>
+
+<script>
+    var request = new XMLHttpRequest();
+    //  你可以重用已存在的XMLHTTPRequest，但这回终止之前通过该对象挂起的任何请求
+
+    //  IE7以前是ActiveX对象
+    if (window.XMLHttpRequest === undefined) {
+        window.XMLHttpRequest = function () {
+            try {
+                //  如果可用，则使用ActiveX对象的最新版本
+                return new ActiveXObject("Msxml2.XMLHTTP.3.0");
+            } catch (e2) {
+                //  否则报错
+                throw new Error("XMLHttpRequest 不支持");
+            }
+        }
+    }
+</script>
+
+<p>
+    一个HTTP请求由4部分组成
+    1.HTTP请求方法、动作
+    2.正在请求的URL
+    3.一个可选的请求头集合，其中可能包括身份验证信息
+    4.一个可选的请求主体
+</p>
+<p>
+    一个服务器返回包括3部分
+    1.一个数字和文字组成的状态码，用来表示请求结果成功或失败
+    2.一个响应头集合
+    3.相应主体
+</p>
+<script>
+    //  调用XMLHttpRequest对象open()指定请求的type和url
+    request.open("GET", "a.json");
+    //  不应该缓存使用post请求，get请求不会对服务器有副作用并且服务器的响应是可以缓存的
+</script>
+<script>
+    //  设置请求头
+    request.setRequestHeader("Content-Type", "text/plain");
+</script>
+<script>
+    //  指定可选的请求主体并向服务器发送
+    //  get请求并没有请求主体
+    request.send(null);
+    //  POST请求通常包含主体，同时他应该匹配使用setRequestHeader()指定的Content-Type头
+</script>
+<p>请求顺序</p>
+<p>1.请求方法和url</p>
+<p>2.设置请求头</p>
+<p>3.send方法，并启动网络</p>
+<script>
+    var stop = false;
+    request.onreadystatechange = function (e) {
+        if (stop) {
+            return;
+        }
+        console.log(e)
+        if (request.readyState === 4 && request.status === 200) {
+            var type = request.getResponseHeader("Content-Type");
+            if (type.match(/json/)) {
+                console.log(JSON.parse(request.response))
+            }
+        }
+    }
+</script>
+
+<script>
+    request.onprogress = function (e) {
+        if (e.loaded / e.total < 50) {
+            stop = true;
+            request.abort();
+        }
+        console.log(Math.round(100 * e.loaded / e.total) + "% Complete");
+    }
+</script>
+<script>
+    //    终止响应
+    //    request.abort();
+</script>
+<script>
+    var supportsCors = request.withCredentials !== undefined;
+    console.log(supportsCors)
+</script>
+<a href="https://www.baidu.com">百度一下</a>
+</body>
+</html>

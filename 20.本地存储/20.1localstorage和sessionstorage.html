@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>本地存储</title>
+</head>
+<body>
+<script>
+    window.addEventListener("storage", function (e) {
+        console.log(e);
+    });
+    localStorage.a = 12;
+    var a = localStorage.getItem('a');
+    localStorage.setItem("b", 12);
+
+</script>
+</body>
+</html>

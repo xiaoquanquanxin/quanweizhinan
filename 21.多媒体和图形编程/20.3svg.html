@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>svg</title>
+    <style>
+        .my-title {
+            background-color: white;
+            /*position: absolute;*/
+        }
+    </style>
+</head>
+<body>
+</body>
+<script>
+    /******
+     * 创建一个svg元素,并在其中绘制一个饼状图
+     * 参数:
+     * data:用于回执的数字类型的数组,每一项都表示饼状图的一个楔
+     * cx,cy,r:圆心半径
+     * colors:颜色的数组
+     * labels:标签的数组,说明每个楔代表的意义
+     * 返回:
+     * 一个保存饼状图的svg
+     * 将这个饼状图append到页面中
+     * ********/
+    function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
+        //  命名空间
+        var svgns = 'http://www.w3.org/2000/svg';
+        //  创建一个svg元素,同事指定像素大小和用户坐标
+        var chart = document.createElementNS(svgns, 'svg:svg');
+        chart.setAttribute('width', width);
+        chart.setAttribute('height', height);
+        chart.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        //  饼状图大小确定
+        var total = 0;
+        for (var i = 0; i < data.length; i++) {
+            total += data[i];
+        }
+        //  算出角的大小,以弧度制计算\表示
+        var angles = [];
+        for (var i = 0; i < data.length; i++) {
+            angles[i] = data[i] / total * 2 * Math.PI;
+        }
+        var startangle = 0;
+        var pathData = [];
+        for (var i = 0; i < data.length; i++) {
+            //  这里表示楔的结束位置
+            var endangle = startangle + angles[i];
+            //  计算出楔和园相交的两个点
+            var x1 = (cx + r * Math.sin(startangle));
+            var y1 = (cy - r * Math.cos(startangle));
+            var x2 = (cx + r * Math.sin(endangle));
+            var y2 = (cy - r * Math.cos(endangle));
+
+            //  这个标记表示角度大于半圆
+            //  此标记在回执svg弧形组件的时候需要
+            var big = 0;
+            if (endangle - startangle > Math.PI) {
+                big = 1;
+            }
+
+            //  使用svg:path元素来描述楔
+            var path = document.createElementNS(svgns, 'path');
+            //  路径的详细信息
+            var d = 'M' + cx + " " + cy
+                    + ",L" + x1 + " " + y1
+                    + ",A" + r + " " + r
+                    + " 0 " + big + " 1 "
+                    + x2 + " " + y2
+                    + " Z";
+            pathData[i] = [startangle, endangle, big];
+            path.setAttribute('d', d);
+            path.setAttribute('_d', d);
+            path.setAttribute('fill', colors[i]);
+            path.setAttribute('stroke', 'black');
+            path.setAttribute('stroke-width', '.6');
+            path.index = i;
+            path.onmouseover = function (e) {
+                var startangle = pathData[this.index][0];
+                var endangle = pathData[this.index][1];
+                var big = pathData[this.index][2];
+                var d = 'M' + cx + " " + cy
+                        + ",L" + (cx + (r * 1.1) * Math.sin(startangle)) + " " + (cy - (r * 1.1) * Math.cos(startangle))
+                        + ",A" + r * 1.1 + " " + r * 1.1
+                        + " 0 " + big + " 1 "
+                        + (cx + (r * 1.1) * Math.sin(endangle)) + " " + (cy - (r * 1.1) * Math.cos(endangle))
+                        + " Z";
+                this.setAttribute('d', d);
+            };
+            path.onmouseout = function (e) {
+                var _d = this.getAttribute('_d');
+                this.setAttribute('d', _d);
+            };
+            chart.appendChild(path);
+            //  当前楔的结束就是下一个楔的开始
+            startangle = endangle;
+            //  现在绘制一些相应的想方块来表示图里
+            var icon = document.createElementNS(svgns, 'rect');
+            icon.setAttribute('x', lx);
+            icon.setAttribute('y', ly + 30 * i);
+            icon.setAttribute('width', '20');
+            icon.setAttribute('height', '20');
+            icon.setAttribute('fill', colors[i]);
+            icon.setAttribute('stroke', 'black');
+            icon.setAttribute('stroke-width', '2');
+            chart.appendChild(icon);
+
+            //  右侧添加标签
+            var label = document.createElementNS(svgns, 'text');
+            label.setAttribute('x', lx + 30);
+            label.setAttribute('y', ly + 30 * i + 18);
+            label.setAttribute('font-size', '16');
+            label.setAttribute('font-family', 'sans-serif');
+            label.appendChild(document.createTextNode(labels[i]));
+            chart.appendChild(label);
+        }
+        return chart;
+    }
+
+    document.body.appendChild(pieChart([12, 23, 34, 111], 640, 400, 240, 200, 150, ['lightyellow', 'lightgrey', 'lightgreen', 'lightblue'], ['North', 'South', 'East', 'West'], 440, 150));
+</script>
+</html>

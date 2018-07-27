@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动画</title>
+    <style>
+        div, dl {
+            border: 1px solid;
+            width: 100px;
+            height: 100px;
+
+        }
+    </style>
+</head>
+
+<body>
+<div></div>
+<button>操作div</button>
+<button>操作div</button>
+<p>1.可以禁止动画,$.fx.off = true</p>
+<p>2.可以通过设置动画时长为0来显得没有动画</p>
+<p>3.可以通过$.fx.speeds添加新的字符串到数值映射关系来定义新的时长名字</p>
+<p>4.jQuery动画的执行顺序默认是队列化的</p>
+<p>5.$.fx.interval=13默认下</p>
+<p>6.$.easing对象上包括缓动函数linear\swing,可以自定义</p>
+
+<dl>
+    ff
+</dl>
+<span>span</span>
+<button>禁止动画</button>
+<script src="jquery-2.1.4.js"></script>
+<script>
+    var div = $("div");
+    var buttonAnimate = $("button").eq(0);
+    buttonAnimate.bind("click", function () {
+        if (div.is(":visible")) {
+            div.slideUp('very-slow');
+            div.fadeOut();
+        } else {
+            div.slideDown({
+                duration: 100,
+                complete: function () {
+                    div.html("慕斯");
+                }
+            });
+            div.fadeIn(11, function () {
+                console.log("fadeIn")
+            });
+        }
+    });
+    var buttonAnimateToggle = $("button").eq(1);
+    buttonAnimateToggle.bind("click", function () {
+        div.slideToggle();
+    });
+    var button = $("button").eq(2);
+    button.bind("click", function () {
+        $.fx.off = !$.fx.off;
+        return false
+    });
+    $.fx.speeds["very-slow"] = 1000;
+</script>
+<script>
+    var dl = $("dl");
+    dl.bind("click", function () {
+        dl.animate({opacity: 0.2, 'font-size': 22}, {
+            duration: 'very-slow', complete: function () {
+                console.log("完成");
+            }
+        });
+        dl.animate({"margin-left": "+=50", opacity: "+=0.4"}, 1111, function () {
+            console.log("完成第二步")
+        });
+    });
+
+    dl.animate({width: '11'}, {queue: false}).animate({"font-size": 52});
+</script>
+<script>
+    //  stop,取消的是当前队列
+    var span = $("span");
+    span.css("display", 'block');
+    span.css("background-color", 'lightgrey');
+    span.hover(function () {
+        span.stop(false).animate({width: 122}, "very-slow").animate({width:1111},"very-slow");
+    }, function () {
+        span.stop(true)
+    });
+    //
+</script>
+</body>
+</html>
+

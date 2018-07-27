@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>事件</title>
+    <style>
+        div {
+            width: 100px;
+            height: 100px;
+            border: 1px solid;
+        }
+    </style>
+</head>
+<body>
+<div>11</div>
+<ul>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+</ul>
+<dl>
+    <dd>111</dd>
+</dl>
+<!--<script src="jquery1.4.1.js"></script>-->
+<script src="jquery-2.1.4.js"></script>
+<script>
+    var $window = $(window);
+    $window.resize(function (e) {
+        console.log('resize');
+    }).unload(function () {
+        console.log('unload');
+    }).load(function () {
+        console.log("load");
+    });
+    var div = $("div");
+    div.hover(function (e) {
+        console.log("in");
+    }, function (e) {
+        console.log("out");
+    });
+    div.hover(function (e) {
+        console.log("in");
+    }, function (e) {
+        console.log("out");
+    });
+    //  先toggle1,后toggle2,循环调用函数
+    div.toggle(function () {
+        console.log("toggle1");
+//        $("span").slideUp(111);
+    }, function () {
+        console.log("toggle2");
+//        $("span").slideDown(111)
+    });
+
+    $("<span></span>").click(function (e) {
+        console.log('click');
+        return "权鑫ncaa";
+    }).css({
+        width: "40px", 'height': "40px", border: "1px solid", display: "block"
+    }).appendTo(div).click(function (e) {
+        console.log(e.result);
+    });
+</script>
+<script>
+    var li = $("li");
+    li.each(function (i) {
+        $(this).click(function () {
+            console.log(i)
+        });
+    });
+</script>
+<script>
+    //  事件处理程序的命名空间
+    div.bind("mouseover.myMod", function () {
+        console.log('myMod');
+    });
+    $window.bind("resize.james", function () {
+        console.log("bind,window,resize")
+    });
+    //  只注销命名空间匹配的事件
+    $window.unbind(".james");
+
+    div[0].addEventListener("click", function (e) {
+        console.log("addEventListener");
+    });
+    div.click(function (e) {
+        console.log(e)
+    })
+    div.trigger("click", {"type": 'click', synthetic: true});
+    //    div[0].click();
+
+</script>
+<script>
+    //  自定义事件
+    var dd = $("dd");
+    $(document).bind("ncaa", function (e) {
+        console.log("自定义事件ncaa");
+    });
+    $.event.trigger("ncaa");
+    dd.bind("ncaa", function (e) {
+        console.log("自定义事件dd的ncaa");
+        e.stopPropagation();
+    });
+    dd.trigger('ncaa')
+</script>
+<script>
+    //  事件委托
+    $(document).delegate("dd", 'mouseover', function (e) {
+        console.log("事件委托");
+        e.stopPropagation();
+    });
+    dd.after($("<dd>222</dd>"));
+</script>
+</body>
+</html>
