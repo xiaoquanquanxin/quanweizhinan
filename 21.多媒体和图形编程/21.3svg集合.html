@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>svg集合</title>
+    <style>
+        .rst-percent {
+            text-align: center;
+            height: 200px;
+
+        }
+
+        svg {
+            background-color: whitesmoke;
+            shape-rendering: crispEdges;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="rst-percent"></div>
+
+<script>
+    var rst = document.getElementsByClassName('rst-percent')[0];
+    var svgns = 'http://www.w3.org/2000/svg';
+    var svgHtml = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>';
+    var rightBaseLine = '<path d="M20.5 180.5 L380.5 180.5 Z" stroke="black" stroke-width=".5"/>';
+
+    function draw(data) {
+        //  最大值
+        var maxValue = Math.ceil(Math.max.apply(null, data.map(function (t, i) {
+                    return t.value;
+                })) / 10);
+        console.log(maxValue)
+        //  svg
+        var chart = document.createElementNS(svgns, 'svg:svg');
+        chart.setAttribute('width', '500px');
+        chart.setAttribute('height', '200px');
+
+        //  坐标原点
+        var baseStartX = 40.5;
+        var baseStartY = 175.5;
+
+        var baseRightX = 480.5;
+        var baseTopY = 10.5;
+        //  作图空间
+        var heigthSpace = baseStartY - baseTopY;
+        var longSpace = baseRightX - baseStartX;
+
+        //  纵向间隔,横向间隔
+        var longitudinalSeparation = Math.floor(heigthSpace / maxValue);
+        var horizontalInterval = Math.floor(longSpace / data.length);
+        baseTopY = baseStartY - maxValue * longitudinalSeparation;
+        baseRightX = baseStartX + data.length * horizontalInterval;
+        //  双基线
+        var leftBaseline = drawLine({
+            'x1': baseStartX + 'px',
+            'y1': baseTopY + 'px',
+            'x2': baseStartX + 'px',
+            'y2': baseStartY + 'px',
+            'stroke': 'black',
+            'stroke-width': '.5',
+        });
+
+        var bottomBaseLine = drawLine({
+            'x1': baseRightX + 'px',
+            'y1': baseStartY + 'px',
+            'x2': baseStartX + 'px',
+            'y2': baseStartY + 'px',
+            'stroke': 'black',
+            'stroke-width': '.5',
+        });
+        chart.appendChild(leftBaseline);
+        chart.appendChild(bottomBaseLine);
+
+
+        //  下侧坐标系顶点
+        chart.appendChild(drawLine({
+            'x1': baseStartX + 'px',
+            'y1': baseStartY + 'px',
+            'x2': baseStartX + 'px',
+            'y2': baseStartY + 5 + 'px',
+            'stroke': 'black',
+            'stroke-width': '1',
+        }));
+        console.log(maxValue, longitudinalSeparation, horizontalInterval);
+
+        var heightValue = maxValue;
+        //  横向网格
+        while (maxValue >= 0) {
+            var y = baseTopY + maxValue * longitudinalSeparation;
+            if (heightValue !== maxValue) {
+                chart.appendChild(drawLine({
+                    'x1': baseRightX + 'px',
+                    'y1': y + 'px',
+                    'x2': baseStartX + 'px',
+                    'y2': y + 'px',
+                    'stroke': 'grey',
+                    'stroke-width': '.5',
+                }));
+            }
+            //  左侧文字
+            chart.appendChild(writeText({
+                x: baseStartX - 20 + "px",
+                y: y + 8 + "px",
+                'font-size': "16",
+                'font-family': "sans-serif",
+                'text-anchor': 'middle'
+            }, (heightValue - maxValue) * 10));
+            //  左侧坐标系顶点
+            chart.appendChild(drawLine({
+                'x1': baseStartX - 5 + 'px',
+                'y1': y + 'px',
+                'x2': baseStartX + 'px',
+                'y2': y + 'px',
+                'stroke': 'black',
+                'stroke-width': '1',
+            }));
+            maxValue--;
+        }
+        //  纵向网格
+        data.map(function (t, i) {
+            var x = horizontalInterval * (i + 1) + baseStartX;
+            chart.appendChild(drawLine({
+                'x1': x + 'px',
+                'y1': baseTopY + 'px',
+                'x2': x + 'px',
+                'y2': baseStartY + 'px',
+                'stroke': 'grey',
+                'stroke-width': '.5',
+            }));
+            var textX = x - horizontalInterval * 0.5;
+            chart.appendChild(writeText({
+                x: textX + "px",
+                y: baseStartY + 18 + "px",
+                'font-size': "16",
+                'font-family': "sans-serif",
+                'text-anchor': 'middle'
+            }, t.name));
+            //  下侧坐标系顶点
+            chart.appendChild(drawLine({
+                'x1': x + 'px',
+                'y1': baseStartY + 5 + 'px',
+                'x2': x + 'px',
+                'y2': baseStartY + 'px',
+                'stroke': 'black',
+                'stroke-width': '1',
+            }));
+            var rectHeight = t.value * longitudinalSeparation / 10;
+            var rectTop = baseStartY - rectHeight;
+            console.log(t.value, rectTop, x);
+            chart.appendChild(drawRect({
+                x: textX - 20 + "px",
+                y: rectTop + 'px',
+                width: "40px",
+                height: rectHeight + 'px',
+                fill: 'lightyellow',
+            }));
+            chart.appendChild(writeText({
+                x: textX + "px",
+                y: rectTop - 3 + "px",
+                'font-size': "16",
+                'font-family': "sans-serif",
+                'text-anchor': 'middle'
+            }, t.value + '%'));
+        });
+        return chart;
+    }
+    //  划线
+    function drawLine(map) {
+        var ns = document.createElementNS(svgns, 'line');
+        for (var key in map) {
+            ns.setAttribute(key, map[key])
+        }
+        return ns;
+    }
+    //  写字
+    function writeText(map, text) {
+        var ns = document.createElementNS(svgns, 'text');
+        for (var key in map) {
+            ns.setAttribute(key, map[key])
+        }
+        ns.appendChild(document.createTextNode(text));
+        return ns;
+    }
+    //  矩形
+    function drawRect(map) {
+        var ns = document.createElementNS(svgns, 'rect');
+        for (var key in map) {
+            ns.setAttribute(key, map[key])
+        }
+        return ns;
+    }
+
+//    var chart = draw([{name: 'faewfagGfawefw', value: 53}, {name: '123f1e656w156aw', value: 47}]);
+            var chart = draw([{name: 1, value: 53}, {name: 2, value: 36}, {name: 1, value: 53}, {name: 2, value: 36}, {name: 3, value: 11}]);
+    rst.appendChild(chart);
+</script>
+</body>
+</html>
+
+
+
+
+
+
