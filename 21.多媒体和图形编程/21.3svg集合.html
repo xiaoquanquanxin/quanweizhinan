@@ -119,6 +119,13 @@
         chart.appendChild(leftBaseline);
         chart.appendChild(bottomBaseLine);
         if (type === 'vertical') {
+            longitudinalSeparation = Math.floor(heigthSpace / maxValue);
+            horizontalInterval = Math.floor(longSpace / data.length);
+            //  重定义顶部最高值
+            baseTopY = baseStartY - maxValue * longitudinalSeparation;
+            //  重定义右侧最大值
+            baseRightX = baseStartX + data.length * horizontalInterval;
+        } else {
             //  纵向间隔,横向间隔
             var longitudinalSeparation = Math.floor(heigthSpace / data.length);
             var horizontalInterval = Math.floor(longSpace / maxValue);
@@ -126,13 +133,6 @@
             baseTopY = baseStartY - data.length * longitudinalSeparation;
             //  重定义右侧最大值
             baseRightX = baseStartX + maxValue * horizontalInterval;
-        } else {
-            longitudinalSeparation = Math.floor(heigthSpace / maxValue);
-            horizontalInterval = Math.floor(longSpace / data.length);
-            //  重定义顶部最高值
-            baseTopY = baseStartY - maxValue * longitudinalSeparation;
-            //  重定义右侧最大值
-            baseRightX = baseStartX + data.length * horizontalInterval;
         }
         if (type === 'vertical') {
             var zeroX = baseStartX - 15 + 'px';
@@ -310,7 +310,7 @@
         //  圆心
         var cx = 250;
         var cy = 100;
-        var bgcArr = ['lightyellow','lightblue']
+        var bgcArr = ['lightyellow', 'lightblue']
         //  绘制
         data.forEach(function (t, i) {
             var endAng = startAng + angles[i];
@@ -323,7 +323,7 @@
             var x2 = cx + r * Math.sin(endAng);
             var y2 = cy - r * Math.cos(endAng);
             //  扇形
-            var bgc = bgcArr[i%2]
+            var bgc = bgcArr[i % 2]
             var path = drawFan(cx, cy, x1, y1, r, overHalf, x2, y2, bgc);
             //  路径的详细信息
             chart.appendChild(path);
@@ -377,18 +377,13 @@
         return path;
     }
     (function () {
-        rst[0].appendChild(drawBarGraph([{name: '权鑫权鑫权鑫权鑫权鑫', value: 17}, {name: '权鑫权鑫权鑫权鑫权鑫', value: 24}, {
-            name: '权鑫权鑫权鑫权鑫权鑫',
-            value: 39
-        }, {name: '权鑫权鑫权鑫权鑫权鑫', value: 20}], 'vertical'));
-        rst[1].appendChild(drawBarGraph([{name: '权鑫权鑫权鑫权鑫权鑫', value: 17}, {name: '权鑫权鑫权鑫权鑫权鑫', value: 24}, {
-            name: '权鑫权鑫权鑫权鑫权鑫',
-            value: 39
-        }, {name: '权鑫权鑫权鑫权鑫权鑫', value: 20}]));
-        rst[2].appendChild(drawPieDiagram([{name: '权鑫权鑫权鑫权鑫权鑫', value: 17}, {name: '权鑫权鑫权鑫权鑫权鑫', value: 24}, {
-            name: '权鑫权鑫权鑫权鑫权鑫',
-            value: 39
-        }, {name: '权鑫权鑫权鑫权鑫权鑫', value: 20}]));
+        var data = [{name: 'itemA', value: 17}, {name: 'itemB', value: 24}, {name: 'itemC', value: 19}, {
+            name: 'itemE',
+            value: 24
+        }];
+        rst[0].appendChild(drawBarGraph(data, 'vertical'));
+        rst[1].appendChild(drawBarGraph(data));
+//        rst[2].appendChild(drawPieDiagram(data));
     }());
 </script>
 </body>
