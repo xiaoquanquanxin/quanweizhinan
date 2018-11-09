@@ -10,174 +10,55 @@
 
         }
 
-        svg {
+        svg{
             background-color: whitesmoke;
-            shape-rendering: crispEdges;
             height: 200px;
+        }
+        svg.barGraph{
+            shape-rendering: crispEdges;
         }
     </style>
 </head>
 <body>
 
+<div class="rst-percent barGraph"></div>
+<br>
+<div class="rst-percent barGraph"></div>
+<br>
 <div class="rst-percent"></div>
 
 <script>
-    var rst = document.getElementsByClassName('rst-percent')[0];
+    var rst = document.getElementsByClassName('rst-percent');
     var svgns = 'http://www.w3.org/2000/svg';
-    var svgHtml = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1"></svg>';
-    var rightBaseLine = '<path d="M20.5 180.5 L380.5 180.5 Z" stroke="black" stroke-width=".5"/>';
 
-    function draw(data) {
-        //  最大值
-        var maxValue = Math.ceil(Math.max.apply(null, data.map(function (t, i) {
-                    return t.value;
-                })) / 10);
-        console.log(maxValue)
-        //  svg
+    //  创建svg
+    function createSvg() {
         var chart = document.createElementNS(svgns, 'svg:svg');
         chart.setAttribute('width', '500px');
         chart.setAttribute('height', '200px');
-
-        //  坐标原点
-        var baseStartX = 40.5;
-        var baseStartY = 175.5;
-
-        var baseRightX = 480.5;
-        var baseTopY = 10.5;
-        //  作图空间
-        var heigthSpace = baseStartY - baseTopY;
-        var longSpace = baseRightX - baseStartX;
-
-        //  纵向间隔,横向间隔
-        var longitudinalSeparation = Math.floor(heigthSpace / maxValue);
-        var horizontalInterval = Math.floor(longSpace / data.length);
-        baseTopY = baseStartY - maxValue * longitudinalSeparation;
-        baseRightX = baseStartX + data.length * horizontalInterval;
-        //  双基线
-        var leftBaseline = drawLine({
-            'x1': baseStartX + 'px',
-            'y1': baseTopY + 'px',
-            'x2': baseStartX + 'px',
-            'y2': baseStartY + 'px',
-            'stroke': 'black',
-            'stroke-width': '.5',
-        });
-
-        var bottomBaseLine = drawLine({
-            'x1': baseRightX + 'px',
-            'y1': baseStartY + 'px',
-            'x2': baseStartX + 'px',
-            'y2': baseStartY + 'px',
-            'stroke': 'black',
-            'stroke-width': '.5',
-        });
-        chart.appendChild(leftBaseline);
-        chart.appendChild(bottomBaseLine);
-
-
-        //  下侧坐标系顶点
-        chart.appendChild(drawLine({
-            'x1': baseStartX + 'px',
-            'y1': baseStartY + 'px',
-            'x2': baseStartX + 'px',
-            'y2': baseStartY + 5 + 'px',
-            'stroke': 'black',
-            'stroke-width': '1',
-        }));
-        console.log(maxValue, longitudinalSeparation, horizontalInterval);
-
-        var heightValue = maxValue;
-        //  横向网格
-        while (maxValue >= 0) {
-            var y = baseTopY + maxValue * longitudinalSeparation;
-            if (heightValue !== maxValue) {
-                chart.appendChild(drawLine({
-                    'x1': baseRightX + 'px',
-                    'y1': y + 'px',
-                    'x2': baseStartX + 'px',
-                    'y2': y + 'px',
-                    'stroke': 'grey',
-                    'stroke-width': '.5',
-                }));
-            }
-            //  左侧文字
-            chart.appendChild(writeText({
-                x: baseStartX - 20 + "px",
-                y: y + 8 + "px",
-                'font-size': "16",
-                'font-family': "sans-serif",
-                'text-anchor': 'middle'
-            }, (heightValue - maxValue) * 10));
-            //  左侧坐标系顶点
-            chart.appendChild(drawLine({
-                'x1': baseStartX - 5 + 'px',
-                'y1': y + 'px',
-                'x2': baseStartX + 'px',
-                'y2': y + 'px',
-                'stroke': 'black',
-                'stroke-width': '1',
-            }));
-            maxValue--;
-        }
-        //  纵向网格
-        data.map(function (t, i) {
-            var x = horizontalInterval * (i + 1) + baseStartX;
-            chart.appendChild(drawLine({
-                'x1': x + 'px',
-                'y1': baseTopY + 'px',
-                'x2': x + 'px',
-                'y2': baseStartY + 'px',
-                'stroke': 'grey',
-                'stroke-width': '.5',
-            }));
-            var textX = x - horizontalInterval * 0.5;
-            chart.appendChild(writeText({
-                x: textX + "px",
-                y: baseStartY + 18 + "px",
-                'font-size': "16",
-                'font-family': "sans-serif",
-                'text-anchor': 'middle'
-            }, t.name));
-            //  下侧坐标系顶点
-            chart.appendChild(drawLine({
-                'x1': x + 'px',
-                'y1': baseStartY + 5 + 'px',
-                'x2': x + 'px',
-                'y2': baseStartY + 'px',
-                'stroke': 'black',
-                'stroke-width': '1',
-            }));
-            var rectHeight = t.value * longitudinalSeparation / 10;
-            var rectTop = baseStartY - rectHeight;
-            console.log(t.value, rectTop, x);
-            chart.appendChild(drawRect({
-                x: textX - 20 + "px",
-                y: rectTop + 'px',
-                width: "40px",
-                height: rectHeight + 'px',
-                fill: 'lightyellow',
-            }));
-            chart.appendChild(writeText({
-                x: textX + "px",
-                y: rectTop - 3 + "px",
-                'font-size': "16",
-                'font-family': "sans-serif",
-                'text-anchor': 'middle'
-            }, t.value + '%'));
-        });
         return chart;
+    }
+    //  获取统计图的最大值
+    function getMaxValue(data) {
+        return Math.ceil(Math.max.apply(null, data.map(function (t, i) {
+                    return t.value;
+                })) / 10);
     }
     //  划线
     function drawLine(map) {
         var ns = document.createElementNS(svgns, 'line');
+        ns.setAttribute('stroke', 'black');
+        ns.setAttribute('stroke-width', '1');
         for (var key in map) {
             ns.setAttribute(key, map[key])
         }
         return ns;
     }
     //  写字
-    function writeText(map, text) {
+    function drawText(map, text) {
         var ns = document.createElementNS(svgns, 'text');
+        ns.setAttribute('font-size', '12');
+        ns.setAttribute('font-family', 'sans-serif');
         for (var key in map) {
             ns.setAttribute(key, map[key])
         }
@@ -192,16 +73,323 @@
         }
         return ns;
     }
+    //  原点的零
+    function drawZero(x, y) {
+        return drawText({
+            'x': x,
+            'y': y,
+            'text-anchor': 'middle',
+            'dominant-baseline': 'middle'
+        }, 0)
+    }
+    /**
+     * 条形统计图
+     * @param data  数据
+     * @param type  'vertical' 垂直
+     * @return dom节点
+     */
+    function drawBarGraph(data, type) {
+        //  最大值
+        var maxValue = getMaxValue(data);
+        //  svg
+        var chart = createSvg();
+        //  坐标原点
+        var baseStartX = 40.5;
+        var baseStartY = 175.5;
+        //  右侧最大值
+        var baseRightX = 480.5;
+        //  顶部最高值
+        var baseTopY = 10.5;
+        //  作图空间
+        var heigthSpace = baseStartY - baseTopY;
+        var longSpace = baseRightX - baseStartX;
+        //  坐标系基线
+        var leftBaseline = drawLine({
+            'x1': baseStartX + 'px',
+            'y1': baseTopY + 'px',
+            'x2': baseStartX + 'px',
+            'y2': baseStartY + 5 + 'px',
+        });
+        var bottomBaseLine = drawLine({
+            'x1': baseRightX + 'px',
+            'y1': baseStartY + 'px',
+            'x2': baseStartX - 5 + 'px',
+            'y2': baseStartY + 'px',
+        });
+        chart.appendChild(leftBaseline);
+        chart.appendChild(bottomBaseLine);
+        if (type === 'vertical') {
+            //  纵向间隔,横向间隔
+            var longitudinalSeparation = Math.floor(heigthSpace / data.length);
+            var horizontalInterval = Math.floor(longSpace / maxValue);
+            //  重定义顶部最高值
+            baseTopY = baseStartY - data.length * longitudinalSeparation;
+            //  重定义右侧最大值
+            baseRightX = baseStartX + maxValue * horizontalInterval;
+        } else {
+            longitudinalSeparation = Math.floor(heigthSpace / maxValue);
+            horizontalInterval = Math.floor(longSpace / data.length);
+            //  重定义顶部最高值
+            baseTopY = baseStartY - maxValue * longitudinalSeparation;
+            //  重定义右侧最大值
+            baseRightX = baseStartX + data.length * horizontalInterval;
+        }
+        if (type === 'vertical') {
+            var zeroX = baseStartX - 15 + 'px';
+            var zeroY = baseStartY + 'px';
+        } else {
+            zeroX = baseStartX + 'px';
+            zeroY = baseStartY + 15 + 'px';
+        }
+        //  零
+        chart.appendChild(drawZero(zeroX, zeroY));
+        if (type === 'vertical') {
+            var heightValue = maxValue;
+            //  横向网格
+            while (maxValue >= 1) {
+                maxValue--;
+                var y = baseTopY + maxValue * longitudinalSeparation;
+                //  横向背景线
+                chart.appendChild(drawLine({
+                    'x1': baseRightX + 'px',
+                    'y1': y + 'px',
+                    'x2': baseStartX + 'px',
+                    'y2': y + 'px',
+                    'stroke': 'grey',
+                    'stroke-width': '.5',
+                }));
+                //  左侧文字
+                chart.appendChild(drawText({
+                    x: baseStartX - 20 + "px",
+                    y: y + 6 + "px",
+                    'text-anchor': 'middle'
+                }, (heightValue - maxValue) * 10));
+                //  左侧坐标系顶点
+                chart.appendChild(drawLine({
+                    'x1': baseStartX - 5 + 'px',
+                    'y1': y + 'px',
+                    'x2': baseStartX + 'px',
+                    'y2': y + 'px',
+                }));
+            }
+            //  纵向网格
+            data.map(function (t, i) {
+                var x = horizontalInterval * (i + 1) + baseStartX;
+                chart.appendChild(drawLine({
+                    'x1': x + 'px',
+                    'y1': baseTopY + 'px',
+                    'x2': x + 'px',
+                    'y2': baseStartY + 'px',
+                    'stroke': 'grey',
+                    'stroke-width': '.5',
+                }));
+                var textX = x - horizontalInterval * 0.5;
+                //  标题
+                chart.appendChild(drawText({
+                    x: textX + "px",
+                    y: baseStartY + 18 + "px",
+                    'text-anchor': 'middle'
+                }, t.name));
+                //  下侧坐标系顶点
+                chart.appendChild(drawLine({
+                    'x1': x + 'px',
+                    'y1': baseStartY + 5 + 'px',
+                    'x2': x + 'px',
+                    'y2': baseStartY + 'px',
+                }));
+                var rectHeight = t.value * longitudinalSeparation / 10;
+                var rectTop = baseStartY - rectHeight;
+                //  统计图
+                chart.appendChild(drawRect({
+                    x: textX - 20 + "px",
+                    y: rectTop + 'px',
+                    width: "40px",
+                    height: rectHeight + 'px',
+                    fill: 'lightyellow',
+                }));
+                //  百分比
+                chart.appendChild(drawText({
+                    x: textX + "px",
+                    y: rectTop - 3 + "px",
+                    'text-anchor': 'middle'
+                }, t.value + '%'));
+            });
+        } else {
+            //  纵向网格
+            while (maxValue >= 1) {
+                var x = horizontalInterval * (maxValue ) + baseStartX;
+                chart.appendChild(drawLine({
+                    'x1': x + 'px',
+                    'y1': baseTopY + 'px',
+                    'x2': x + 'px',
+                    'y2': baseStartY + 'px',
+                    'stroke': 'grey',
+                    'stroke-width': '.5',
+                }));
+                //  下侧坐标系顶点
+                chart.appendChild(drawLine({
+                    'x1': x + 'px',
+                    'y1': baseStartY + 5 + 'px',
+                    'x2': x + 'px',
+                    'y2': baseStartY + 'px',
+                }));
+                //  下侧坐标
+                chart.appendChild(drawText({
+                    x: x + "px",
+                    y: baseStartY + 15 + "px",
+                    'dominant-baseline': 'middle',
+                    'text-anchor': 'middle',
+                }, maxValue * 10));
+                maxValue--;
+            }
+            //  横向网络
+            data.map(function (t, i) {
+                var y = baseTopY + i * longitudinalSeparation;
+                chart.appendChild(drawLine({
+                    'x1': baseRightX + 'px',
+                    'y1': y + 'px',
+                    'x2': baseStartX + 'px',
+                    'y2': y + 'px',
+                    'stroke': 'grey',
+                    'stroke-width': '.5',
+                }));
+                //  左侧坐标系顶点
+                chart.appendChild(drawLine({
+                    'x1': baseStartX - 5 + 'px',
+                    'y1': y + 'px',
+                    'x2': baseStartX + 'px',
+                    'y2': y + 'px',
+                }));
+                var textY = y + longitudinalSeparation / 2;
+                //  左侧文字
+                chart.appendChild(drawText({
+                    x: baseStartX - 5 + "px",
+                    y: textY + "px",
+                    'text-anchor': 'end',
+                    'dominant-baseline': 'middle'
+                }, t.name));
 
-//    var chart = draw([{name: 'faewfagGfawefw', value: 53}, {name: '123f1e656w156aw', value: 47}]);
-            var chart = draw([{name: 1, value: 53}, {name: 2, value: 36}, {name: 1, value: 53}, {name: 2, value: 36}, {name: 3, value: 11}]);
-    rst.appendChild(chart);
+                //  统计图
+                var long = t.value * horizontalInterval / 10;
+                chart.appendChild(drawRect({
+                    x: baseStartX + 0.5 + "px",
+                    y: textY - 15 + "px",
+                    width: long + 'px',
+                    height: "30px",
+                    fill: 'lightyellow',
+                }));
+                //  右侧文字
+                chart.appendChild(drawText({
+                    x: baseStartX + long + 5 + "px",
+                    y: textY + "px",
+                    'dominant-baseline': 'middle'
+                }, t.value + '%'));
+            });
+        }
+        return chart;
+    }
+    /**
+     * @param data  数据
+     * @return dom节点
+     */
+    function drawPieDiagram(data) {
+        //  svg
+        var chart = createSvg();
+        //  饼状图总值
+        var total = data.reduce(function (a, x) {
+            return a + x.value;
+        }, 0);
+        //  算出角的大小,以弧度制计算\表示
+        var angles = data.map(function (t, i) {
+            return t.value / total * 2 * Math.PI;
+        });
+        //  起始角度
+        var startAng = 0;
+        //  半径
+        var r = 80;
+        //  圆心
+        var cx = 250;
+        var cy = 100;
+        var bgcArr = ['lightyellow','lightblue']
+        //  绘制
+        data.forEach(function (t, i) {
+            var endAng = startAng + angles[i];
+            var lineAng = startAng + angles[i] / 2;
+            //  大于半圆
+            var overHalf = endAng - startAng > Math.PI;
+            //  扇形弧的两个顶点
+            var x1 = cx + r * Math.sin(startAng);
+            var y1 = cy - r * Math.cos(startAng);
+            var x2 = cx + r * Math.sin(endAng);
+            var y2 = cy - r * Math.cos(endAng);
+            //  扇形
+            var bgc = bgcArr[i%2]
+            var path = drawFan(cx, cy, x1, y1, r, overHalf, x2, y2, bgc);
+            //  路径的详细信息
+            chart.appendChild(path);
+            var radioX = cx + r * 1.1 * Math.sin(lineAng);
+            var radioY = cy - r * 1.1 * Math.cos(lineAng);
+            //  放射线
+            chart.appendChild(drawLine({
+                'x1': cx + 'px',
+                'y1': cy + 'px',
+                'x2': radioX + 'px',
+                'y2': radioY + 'px',
+                'stroke': bgc,
+            }));
+            if (radioX - cx < 0) {
+                var radioX1 = radioX - 20;
+                var textAnchor = 'end';
+            } else {
+                radioX1 = radioX + 20;
+                textAnchor = 'start';
+            }
+            //  延长线
+            chart.appendChild(drawLine({
+                'x1': radioX1 + 'px',
+                'y1': radioY + 'px',
+                'x2': radioX + 'px',
+                'y2': radioY + 'px',
+                'stroke': bgc,
+            }));
+            //  文字
+            chart.appendChild(drawText({
+                x: radioX1 + "px",
+                y: radioY + 4 + "px",
+                'text-anchor': textAnchor
+            }, t.name + ' : ' + t.value + '%'));
+            startAng = endAng;
+        });
+
+        return chart
+    }
+    //  扇形
+    function drawFan(mx, my, lx, ly, r, overHalf, x, y, bgc) {
+        var path = document.createElementNS(svgns, 'path');
+        var d = 'M' + mx + " " + my
+                + ",L" + lx + " " + ly
+                + ",A" + r + " " + r
+                + " 0 " + overHalf * 1 + " 1 "
+                + x + " " + y
+                + " Z";
+        path.setAttribute('d', d);
+        path.setAttribute('fill', bgc);
+        return path;
+    }
+    (function () {
+        rst[0].appendChild(drawBarGraph([{name: '权鑫权鑫权鑫权鑫权鑫', value: 17}, {name: '权鑫权鑫权鑫权鑫权鑫', value: 24}, {
+            name: '权鑫权鑫权鑫权鑫权鑫',
+            value: 39
+        }, {name: '权鑫权鑫权鑫权鑫权鑫', value: 20}], 'vertical'));
+        rst[1].appendChild(drawBarGraph([{name: '权鑫权鑫权鑫权鑫权鑫', value: 17}, {name: '权鑫权鑫权鑫权鑫权鑫', value: 24}, {
+            name: '权鑫权鑫权鑫权鑫权鑫',
+            value: 39
+        }, {name: '权鑫权鑫权鑫权鑫权鑫', value: 20}]));
+        rst[2].appendChild(drawPieDiagram([{name: '权鑫权鑫权鑫权鑫权鑫', value: 17}, {name: '权鑫权鑫权鑫权鑫权鑫', value: 24}, {
+            name: '权鑫权鑫权鑫权鑫权鑫',
+            value: 39
+        }, {name: '权鑫权鑫权鑫权鑫权鑫', value: 20}]));
+    }());
 </script>
 </body>
 </html>
-
-
-
-
-
-
